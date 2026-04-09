@@ -1,10 +1,10 @@
 {
-  "name": "mcp-dakota-mats",
+  "name": "mcp-business-central",
   "version": "0.1.0",
-  "description": "MCP server for Dakota Matting — Microsoft Dynamics 365 Business Central",
+  "description": "MCP server for Microsoft Dynamics 365 Business Central",
   "type": "module",
   "bin": {
-    "mcp-dakota-mats": "build/index.js"
+    "mcp-business-central": "build/index.js"
   },
   "files": [
     "build"
@@ -17,7 +17,7 @@
     "mcp",
     "business-central",
     "dynamics-365",
-    "dakota-matting"
+    "dynamics-365"
   ],
   "license": "MIT",
   "dependencies": {

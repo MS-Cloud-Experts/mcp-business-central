@@ -1,14 +1,14 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-    Setup script for mcp-dakota-mats - MCP server for Dakota Matting (Business Central)
+    Setup script for mcp-business-central - MCP server for Business Central (Business Central)
 .DESCRIPTION
     Checks prerequisites, clones/builds the project, configures Claude Desktop,
     and guides the user through Azure authentication.
 #>
 
 param(
-    [string]$InstallDir = "$env:USERPROFILE\Documents\mcp-dakota-mats",
+    [string]$InstallDir = "$env:USERPROFILE\Documents\mcp-business-central",
     [switch]$SkipAzLogin
 )
 
@@ -32,7 +32,7 @@ function Test-Command {
 Clear-Host
 Write-Host ""
 Write-Host "  +==================================================+" -ForegroundColor Cyan
-Write-Host "  |   MCP Business Central - Dakota Matting Setup   |" -ForegroundColor Cyan
+Write-Host "  |   MCP Business Central - Setup Wizard   |" -ForegroundColor Cyan
 Write-Host "  |   115 AI tools for Claude Desktop               |" -ForegroundColor Cyan
 Write-Host "  +==================================================+" -ForegroundColor Cyan
 Write-Host ""
@@ -143,11 +143,11 @@ if (-not $SkipAzLogin) {
         Write-Ok "Already signed in as $($azAccount.user.name)"
         $relogin = Read-Host "  Use this account? (Y to keep, N to sign in with a different one)"
         if ($relogin -match '^[Nn]') {
-            Write-Host "  A browser window will open -sign in with your Dakota Matting account." -ForegroundColor Gray
+            Write-Host "  A browser window will open -sign in with your Business Central account." -ForegroundColor Gray
             az login | Out-Null
         }
     } else {
-        Write-Host "  A browser window will open -sign in with your Dakota Matting / Microsoft work account." -ForegroundColor Gray
+        Write-Host "  A browser window will open -sign in with your Business Central / Microsoft work account." -ForegroundColor Gray
         Read-Host "  Press Enter to open the login page"
         az login | Out-Null
     }
@@ -181,7 +181,7 @@ if (Test-Path "$InstallDir\.git") {
     }
     Write-Host "  Cloning from GitHub (you may be asked for credentials)..." -ForegroundColor Gray
     $ErrorActionPreference = "Continue"
-    git clone https://github.com/MS-Cloud-Experts/mcp-dakota-mats.git $InstallDir 2>&1 | Out-Null
+    git clone https://github.com/MS-Cloud-Experts/mcp-business-central.git $InstallDir 2>&1 | Out-Null
     $ErrorActionPreference = "Stop"
     if (-not (Test-Path "$InstallDir\package.json")) {
         Write-Fail "Clone failed. Make sure your GitHub account has access to MS-Cloud-Experts."

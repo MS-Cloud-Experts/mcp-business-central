@@ -7,7 +7,7 @@ export const dktJobLedgerEntries: EntityDefinition = {
   pageId: "PAG73038",
   apiBase: "custom",
   description:
-    "Exposes job ledger entries including usage and sales postings, costs, prices, and dimensions for Dakota Matting projects.",
+    "Exposes job ledger entries including usage and sales postings, costs, prices, and dimensions for custom job management.",
   keyStrategy: { kind: "integer", field: "entryNo" },
   operations: { list: true, create: false, modify: false, delete: false },
   properties: [
@@ -43,7 +43,7 @@ export const dktJobTasks: EntityDefinition = {
   pageId: "PAG73045",
   apiBase: "custom",
   description:
-    "Manages job task records for Dakota Matting projects including task types, descriptions, totaling, and page formatting.",
+    "Manages job task records for custom job management including task types, descriptions, totaling, and page formatting.",
   keyStrategy: { kind: "composite", fields: ["jobNo", "jobTaskNo"] },
   operations: { list: true, create: true, modify: true, delete: true },
   properties: [
@@ -71,7 +71,7 @@ export const dktJobPlanningLines: EntityDefinition = {
   pageId: "PAG73046",
   apiBase: "custom",
   description:
-    "Manages job planning lines for Dakota Matting projects including resources, items, quantities, costs, pricing, shipment details, and mat-specific fields like mats per load and overhead bucket percentages.",
+    "Manages job planning lines for custom job management including resources, items, quantities, costs, pricing, shipment details, and mat-specific fields like mats per load and overhead bucket percentages.",
   keyStrategy: { kind: "uuid", field: "systemId" },
   operations: { list: true, create: true, modify: true, delete: true },
   properties: [

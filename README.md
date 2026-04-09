@@ -1,6 +1,6 @@
-# mcp-dakota-mats
+# mcp-business-central
 
-MCP server for **Dakota Matting** — connects AI assistants to Microsoft Dynamics 365 Business Central via the [Model Context Protocol](https://modelcontextprotocol.io).
+MCP server that connects AI assistants to Microsoft Dynamics 365 Business Central via the [Model Context Protocol](https://modelcontextprotocol.io).
 
 **115 named tools** covering 93 BC entities (85 standard + 8 custom Dakota APIs) with full OData query support, ETag-based concurrency, and Azure CLI authentication.
 
@@ -13,7 +13,7 @@ MCP server for **Dakota Matting** — connects AI assistants to Microsoft Dynami
 Open **PowerShell** and paste this command:
 
 ```powershell
-irm https://raw.githubusercontent.com/MS-Cloud-Experts/mcp-dakota-mats/main/setup.ps1 | iex
+irm https://raw.githubusercontent.com/MS-Cloud-Experts/mcp-business-central/main/setup.ps1 | iex
 ```
 
 Or if you already cloned the repo, right-click `setup.ps1` → **Run with PowerShell**.
@@ -67,8 +67,8 @@ Run these commands one at a time:
 
 ```
 cd %USERPROFILE%\Documents
-git clone https://github.com/MS-Cloud-Experts/mcp-dakota-mats.git
-cd mcp-dakota-mats
+git clone https://github.com/MS-Cloud-Experts/mcp-business-central.git
+cd mcp-business-central
 npm install
 npm run build
 ```
@@ -86,7 +86,7 @@ npm run build
   "mcpServers": {
     "BusinessCentral": {
       "command": "node",
-      "args": ["C:\\Users\\YOUR_USERNAME\\Documents\\mcp-dakota-mats\\build\\index.js"],
+      "args": ["C:\\Users\\YOUR_USERNAME\\Documents\\mcp-business-central\\build\\index.js"],
       "env": {
         "BC_TENANT_ID": "your-tenant-guid",
         "BC_ENVIRONMENT": "Production",
