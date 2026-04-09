@@ -250,7 +250,7 @@ Write-Step "Configuring Claude Desktop..."
 
 $configDir  = "$env:APPDATA\Claude"
 $configFile = "$configDir\claude_desktop_config.json"
-$serverPath = "$InstallDir\build\index.js" -replace '\\','\\'
+$serverPath = "$InstallDir\build\index.js"
 
 # Build env block
 $envBlock = [ordered]@{
