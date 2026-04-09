@@ -1,0 +1,252 @@
+import type { EntityDefinition } from "../types.js";
+import { str, uuid, date, decimal, int32, bool, opt, ro } from "../helpers.js";
+
+export const dktJobLedgerEntries: EntityDefinition = {
+  entityName: "dktJobLedgerEntry",
+  entitySetName: "dktJobLedgerEntries",
+  pageId: "PAG73038",
+  apiBase: "custom",
+  description:
+    "Exposes job ledger entries including usage and sales postings, costs, prices, and dimensions for Dakota Matting projects.",
+  keyStrategy: { kind: "integer", field: "entryNo" },
+  operations: { list: true, create: false, modify: false, delete: false },
+  properties: [
+    int32("entryNo", "Entry No."),
+    str("jobNo", "Job No."),
+    str("jobTaskNo", "Job Task No."),
+    date("postingDate", "Posting Date"),
+    opt("jobEntryType", "Job Entry Type", ["Usage", "Sale"]),
+    str("documentNo", "Document No."),
+    opt("entryType", "Entry Type", [
+      "Resource",
+      "Item",
+      "G_x002F_L_x0020_Account",
+    ]),
+    str("no", "No."),
+    str("description", "Description"),
+    decimal("quantity", "Quantity"),
+    str("unitOfMeasureCode", "Unit of Measure Code"),
+    decimal("unitCost", "Unit Cost"),
+    decimal("unitPrice", "Unit Price"),
+    decimal("totalCost", "Total Cost"),
+    decimal("totalPrice", "Total Price"),
+    decimal("lineAmount", "Line Amount"),
+    str("genericResourceNo", "Generic Resource No."),
+    str("shortcutDimension1Code", "Shortcut Dimension 1 Code"),
+    str("shortcutDimension2Code", "Shortcut Dimension 2 Code"),
+  ],
+};
+
+export const dktJobTasks: EntityDefinition = {
+  entityName: "dktJobTask",
+  entitySetName: "dktJobTasks",
+  pageId: "PAG73045",
+  apiBase: "custom",
+  description:
+    "Manages job task records for Dakota Matting projects including task types, descriptions, totaling, and page formatting.",
+  keyStrategy: { kind: "composite", fields: ["jobNo", "jobTaskNo"] },
+  operations: { list: true, create: true, modify: true, delete: true },
+  properties: [
+    str("jobNo", "Job No."),
+    str("jobTaskNo", "Job Task No."),
+    str("description", "Description"),
+    opt("jobTaskType", "Job Task Type", [
+      "Posting",
+      "Heading",
+      "Total",
+      "Begin_x002D_Total",
+      "End_x002D_Total",
+    ]),
+    str("totaling", "Totaling"),
+    bool("newPage", "New Page"),
+    int32("noOfBlankLines", "No. of Blank Lines"),
+    int32("indentation", "Indentation"),
+    uuid("systemId", "System Id"),
+  ],
+};
+
+export const dktJobPlanningLines: EntityDefinition = {
+  entityName: "dktJobPlanningLine",
+  entitySetName: "dktJobPlanningLines",
+  pageId: "PAG73046",
+  apiBase: "custom",
+  description:
+    "Manages job planning lines for Dakota Matting projects including resources, items, quantities, costs, pricing, shipment details, and mat-specific fields like mats per load and overhead bucket percentages.",
+  keyStrategy: { kind: "uuid", field: "systemId" },
+  operations: { list: true, create: true, modify: true, delete: true },
+  properties: [
+    uuid("systemId", "System Id"),
+    str("jobNo", "Job No."),
+    str("jobTaskNo", "Job Task No."),
+    int32("lineNo", "Line No."),
+    opt("lineType", "Line Type", [
+      "Budget",
+      "Billable",
+      "Both_x0020_Budget_x0020_and_x0020_Billable",
+    ]),
+    opt("type", "Type", [
+      "Resource",
+      "Item",
+      "G_x002F_L_x0020_Account",
+      "Text",
+    ]),
+    str("no", "No."),
+    str("description", "Description"),
+    decimal("quantity", "Quantity"),
+    str("unitOfMeasureCode", "Unit of Measure Code"),
+    decimal("unitCost", "Unit Cost"),
+    decimal("unitPrice", "Unit Price"),
+    decimal("lineAmount", "Line Amount"),
+    date("planningDate", "Planning Date"),
+    str("locationCode", "Location Code"),
+    opt("shipmentType", "Shipment Type", ["Internal", "External"]),
+    str("resourceItemNo", "Resource Item No."),
+    str("resourceVariantCode", "Resource Variant Code"),
+    date("shipmentDate", "Shipment Date"),
+    date("endDate", "End Date"),
+    int32("duration", "Duration"),
+    decimal("overheadBucketPct", "Overhead Bucket %"),
+    bool("changeOrder", "Change Order"),
+    int32("qtyPCs", "Qty PCs"),
+    decimal("dailyCost", "Daily Cost"),
+    str("matsPerLoad", "Mats Per Load"),
+    str("shortcutDimension1Code", "Shortcut Dimension 1 Code"),
+    str("shortcutDimension2Code", "Shortcut Dimension 2 Code"),
+    str("productLine", "Product Line"),
+  ],
+};
+
+export const matUtilizations: EntityDefinition = {
+  entityName: "matUtilization",
+  entitySetName: "matUtilizations",
+  pageId: "PAG73090",
+  apiBase: "custom",
+  description:
+    "Exposes mat utilization data including resource/item details, stock quantities, rental status, utilization percentages, depreciation, weights, and daily rate costs.",
+  keyStrategy: { kind: "integer", field: "entryNo" },
+  operations: { list: true, create: false, modify: false, delete: false },
+  properties: [
+    int32("entryNo", "Entry No."),
+    str("resourceNo", "Resource No."),
+    str("resourceName", "Resource Name"),
+    str("itemNo", "Item No."),
+    str("itemVariant", "Item Variant"),
+    str("matCategory", "Mat Category"),
+    decimal("inStockQty", "In Stock Qty"),
+    decimal("yardQty", "Yard Qty"),
+    decimal("onRentQty", "On Rent Qty"),
+    decimal("onJobOffRent", "On Job Off Rent"),
+    decimal("variance", "Variance"),
+    decimal("utilizationPct", "Utilization %"),
+    decimal("depreciatedPct", "Depreciated %"),
+    decimal("weightLbs", "Weight (lbs)"),
+    decimal("updatedCost", "Updated Cost"),
+    decimal("dailyRateCost", "Daily Rate Cost"),
+    str("material", "Material"),
+    str("fixAssetNo", "Fixed Asset No."),
+  ],
+};
+
+export const matCategorySummaries: EntityDefinition = {
+  entityName: "matCategorySummary",
+  entitySetName: "matCategorySummaries",
+  pageId: "PAG73091",
+  apiBase: "custom",
+  description:
+    "Provides mat category summary data including stock totals, rental quantities, warehouse quantities, utilization vs. target percentages, available stock, and resource counts.",
+  keyStrategy: { kind: "integer", field: "entryNo" },
+  operations: { list: true, create: false, modify: false, delete: false },
+  properties: [
+    int32("entryNo", "Entry No."),
+    str("categoryCode", "Category Code"),
+    str("categoryName", "Category Name"),
+    decimal("totalStock", "Total Stock"),
+    decimal("onRent", "On Rent"),
+    decimal("warehouseQty", "Warehouse Qty"),
+    decimal("onJobOffRent", "On Job Off Rent"),
+    decimal("utilizationPct", "Utilization %"),
+    decimal("targetPct", "Target %"),
+    decimal("vsTarget", "vs Target"),
+    decimal("available", "Available"),
+    decimal("depreciatedPct", "Depreciated %"),
+    int32("resourceCount", "Resource Count"),
+  ],
+};
+
+export const matUtilizationHistories: EntityDefinition = {
+  entityName: "matUtilizationHistory",
+  entitySetName: "matUtilizationHistories",
+  pageId: "PAG73092",
+  apiBase: "custom",
+  description:
+    "Provides historical mat utilization snapshots by category including stock levels, rental quantities, and utilization percentages over time.",
+  keyStrategy: { kind: "integer", field: "entryNo" },
+  operations: { list: true, create: false, modify: false, delete: false },
+  properties: [
+    int32("entryNo", "Entry No."),
+    date("snapshotDate", "Snapshot Date"),
+    str("categoryCode", "Category Code"),
+    decimal("totalStock", "Total Stock"),
+    decimal("onRent", "On Rent"),
+    decimal("warehouseQty", "Warehouse Qty"),
+    decimal("onJobOffRent", "On Job Off Rent"),
+    decimal("utilizationPct", "Utilization %"),
+  ],
+};
+
+export const itemAttributeMappings: EntityDefinition = {
+  entityName: "itemAttributeMapping",
+  entitySetName: "itemAttributeMappings",
+  pageId: "PAG73093",
+  apiBase: "custom",
+  description:
+    "Manages item-to-attribute mappings, linking items to their attribute names and values for enhanced product classification and filtering.",
+  keyStrategy: { kind: "integer", field: "entryNo" },
+  operations: { list: true, create: true, modify: true, delete: true },
+  properties: [
+    int32("entryNo", "Entry No."),
+    str("itemNo", "Item No."),
+    ro(str("itemDescription", "Item Description")),
+    str("attributeName", "Attribute Name"),
+    str("attributeValue", "Attribute Value"),
+    ro(int32("attributeId", "Attribute Id")),
+    ro(int32("attributeValueId", "Attribute Value Id")),
+  ],
+};
+
+export const timeSheetEntries: EntityDefinition = {
+  entityName: "timeSheetEntry",
+  entitySetName: "timeSheetEntries",
+  pageId: "PAG73094",
+  apiBase: "custom",
+  description:
+    "Manages time sheet entries for tracking employee hours including resource details, job/task assignments, work types, quantities, and approval status.",
+  keyStrategy: { kind: "integer", field: "entryNo" },
+  operations: { list: true, create: true, modify: true, delete: true },
+  properties: [
+    int32("entryNo", "Entry No."),
+    ro(str("timeSheetNo", "Time Sheet No.")),
+    str("resourceNo", "Resource No."),
+    ro(str("resourceName", "Resource Name")),
+    ro(date("startingDate", "Starting Date")),
+    ro(int32("lineNo", "Line No.")),
+    str("jobNo", "Job No."),
+    str("jobTaskNo", "Job Task No."),
+    str("workTypeCode", "Work Type Code"),
+    date("entryDate", "Date"),
+    decimal("quantity", "Quantity"),
+    ro(str("status", "Status")),
+    str("description", "Description"),
+  ],
+};
+
+export const customEntities: EntityDefinition[] = [
+  dktJobLedgerEntries,
+  dktJobTasks,
+  dktJobPlanningLines,
+  matUtilizations,
+  matCategorySummaries,
+  matUtilizationHistories,
+  itemAttributeMappings,
+  timeSheetEntries,
+];

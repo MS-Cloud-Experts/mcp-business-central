@@ -1,0 +1,34 @@
+{
+  "name": "mcp-dakota-mats",
+  "version": "0.1.0",
+  "description": "MCP server for Dakota Matting — Microsoft Dynamics 365 Business Central",
+  "type": "module",
+  "bin": {
+    "mcp-dakota-mats": "build/index.js"
+  },
+  "files": [
+    "build"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "keywords": [
+    "mcp",
+    "business-central",
+    "dynamics-365",
+    "dakota-matting"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@azure/identity": "^4.0.0",
+    "@modelcontextprotocol/sdk": "0.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
