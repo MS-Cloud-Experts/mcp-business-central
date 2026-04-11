@@ -7,7 +7,7 @@ import { getTools, dispatch } from "./handlers/dispatcher.js";
 
 export function createServer(): Server {
   const server = new Server(
-    { name: "mcp-dakota-mats", version: "0.1.0" },
+    { name: "mcp-business-central", version: "0.4.0" },
     { capabilities: { tools: {} } }
   );
 

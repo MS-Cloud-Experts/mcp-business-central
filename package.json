@@ -1,7 +1,7 @@
 {
-  "name": "mcp-business-central",
-  "version": "0.1.0",
-  "description": "MCP server for Microsoft Dynamics 365 Business Central",
+  "name": "@mscloudexperts/mcp-business-central",
+  "version": "0.4.0",
+  "description": "MCP server for Microsoft Dynamics 365 Business Central with 115 named tools",
   "type": "module",
   "bin": {
     "mcp-business-central": "build/index.js"
@@ -16,10 +16,12 @@
   "keywords": [
     "mcp",
     "business-central",
-    "dynamics-365",
     "dynamics-365"
   ],
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "@azure/identity": "^4.0.0",
     "@modelcontextprotocol/sdk": "0.6.0"

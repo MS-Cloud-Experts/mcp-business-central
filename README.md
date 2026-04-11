@@ -2,7 +2,7 @@
 
 MCP server that connects AI assistants to Microsoft Dynamics 365 Business Central via the [Model Context Protocol](https://modelcontextprotocol.io).
 
-**115 named tools** covering 93 BC entities (85 standard + 8 custom Dakota APIs) with full OData query support, ETag-based concurrency, and Azure CLI authentication.
+**115 named tools** covering 93 BC entities (85 standard + 8 custom API entities) with full OData query support, ETag-based concurrency, and Azure CLI authentication.
 
 ---
 
@@ -100,7 +100,7 @@ npm run build
 4. Replace `YOUR_USERNAME` with your Windows username, and fill in your BC tenant details.
 5. **(Optional)** If you use custom APIs, add these env vars too:
    - `BC_CUSTOM_API_PUBLISHER` — e.g., `MscloudExperts`
-   - `BC_CUSTOM_API_GROUP` — e.g., `dakotaMats`
+   - `BC_CUSTOM_API_GROUP` — the custom API group name (optional)
    - `BC_CUSTOM_API_VERSION` — e.g., `v1.0` (default)
 6. Save the file (**Ctrl+S**)
 7. **Quit Claude Desktop completely** — right-click the icon in the system tray -> **Quit**, then reopen it
@@ -158,7 +158,7 @@ src/
 │   │   ├── projects.ts         #    1 entity  (projects)
 │   │   └── reports.ts          #   11 entities (aged AR/AP, balance sheet…)
 │   └── custom/
-│       └── dakota.ts           #  8 Dakota-specific custom entities
+│       └── index.ts            #  8 custom API entities (jobs, mats, timesheets…)
 ├── factory/
 │   ├── tool-generator.ts       # Generates MCP tool defs from catalog
 │   ├── schema-builder.ts       # JSON Schema for tool inputs
@@ -204,7 +204,10 @@ src/
 | **Projects** | projects | 1 |
 | **Reports** | aged AR/AP, balance sheet, trial balance, income statement, cash flow, PDF documents, job queue… | 11 |
 
-### Custom Dakota Entities (8)
+### Custom API Entities (8)
+
+These map to a custom API published in Business Central (page IDs PAG73038-PAG73094). They are **optional** — set `BC_CUSTOM_API_PUBLISHER`, `BC_CUSTOM_API_GROUP`, and `BC_CUSTOM_API_VERSION` only if your tenant has these pages deployed. Otherwise use the script without those env vars and you get the 107 standard tools.
+
 
 | Entity | Page ID | Key Strategy | Operations | Purpose |
 |--------|---------|--------------|------------|---------|
@@ -255,7 +258,7 @@ All connection details are passed via environment variables (set in your MCP cli
 | `BC_ENVIRONMENT` | Yes | `Production`, `Sandbox` |
 | `BC_COMPANY` | Yes | `CRONUS USA, Inc.` |
 | `BC_CUSTOM_API_PUBLISHER` | No | `MscloudExperts` |
-| `BC_CUSTOM_API_GROUP` | No | `dakotaMats` |
+| `BC_CUSTOM_API_GROUP` | No | custom API group name |
 | `BC_CUSTOM_API_VERSION` | No | `v1.0` (default) |
 
 ### Authentication
