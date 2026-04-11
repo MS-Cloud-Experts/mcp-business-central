@@ -6,7 +6,7 @@ async function main() {
   const server = createServer();
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.error("mcp-dakota-mats server running on stdio");
+  console.error("mcp-business-central server running on stdio");
 }
 
 main().catch((error) => {
