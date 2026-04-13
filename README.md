@@ -291,6 +291,35 @@ node -e "
 
 ---
 
+## Optional: Dataverse MCP installer
+
+This repo also hosts `setup-dataverse.ps1`, an **independent** one-shot installer for the [`mcp-dataverse`](https://www.npmjs.com/package/mcp-dataverse) server. It is **not** related to the Business Central MCP above — it is bundled here only to give clients a single `irm | iex` entry point while we evaluate the package.
+
+The installer:
+
+- Checks Node.js v20+
+- Runs `npm install mcp-dataverse` into `%USERPROFILE%\mcp-dataverse`
+- Writes a `config.json` with the tenant/client IDs pre-filled
+- Prompts for the **client secret** (hidden input) or accepts it via `-ClientSecret`
+- Merges a `Dataverse` entry into `%APPDATA%\Claude\claude_desktop_config.json` with the same backup + verify logic as `setup.ps1`
+
+**Interactive (prompts for the secret):**
+
+```powershell
+irm https://raw.githubusercontent.com/MS-Cloud-Experts/mcp-business-central/main/setup-dataverse.ps1 | iex
+```
+
+**With the secret passed inline** (useful for unattended installs):
+
+```powershell
+$secret = "your-client-secret"
+powershell -ExecutionPolicy Bypass -File setup-dataverse.ps1 -ClientSecret $secret
+```
+
+Note: the `irm | iex` form executes the script inline and cannot pass `-ClientSecret`, so it will always prompt interactively.
+
+---
+
 ## License
 
 MIT
