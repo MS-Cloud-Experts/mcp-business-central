@@ -28,6 +28,34 @@ function Test-Command {
     $null -ne (Get-Command $Name -ErrorAction SilentlyContinue)
 }
 
+# Writes text to a file as UTF-8 WITHOUT a BOM. PowerShell 5.1's
+# `Set-Content -Encoding UTF8` emits a BOM, which Claude Desktop's JSON
+# parser rejects — this helper sidesteps that.
+function Write-Utf8NoBom {
+    param([string]$Path, [string]$Content)
+    $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+    [System.IO.File]::WriteAllText($Path, $Content, $utf8NoBom)
+}
+
+function ConvertTo-HashtableDeep {
+    param($InputObject)
+    if ($null -eq $InputObject) { return $null }
+    if ($InputObject -is [System.Collections.IDictionary]) {
+        $h = @{}
+        foreach ($k in $InputObject.Keys) { $h[$k] = ConvertTo-HashtableDeep $InputObject[$k] }
+        return $h
+    }
+    if ($InputObject -is [System.Management.Automation.PSCustomObject]) {
+        $h = @{}
+        foreach ($p in $InputObject.PSObject.Properties) { $h[$p.Name] = ConvertTo-HashtableDeep $p.Value }
+        return $h
+    }
+    if ($InputObject -is [System.Collections.IEnumerable] -and -not ($InputObject -is [string])) {
+        return @($InputObject | ForEach-Object { ConvertTo-HashtableDeep $_ })
+    }
+    return $InputObject
+}
+
 # -- Banner -------------------------------------------------------------------
 
 Clear-Host
@@ -194,7 +222,7 @@ if ($bcCustomPub) {
     $envBlock["BC_CUSTOM_API_VERSION"]   = $bcCustomVer
 }
 
-$desiredServer = [ordered]@{
+$desiredServer = @{
     command = $npxPath
     args    = @("-y", "@mscloudexperts/mcp-business-central")
     env     = $envBlock
@@ -204,33 +232,52 @@ if (-not (Test-Path $configDir)) {
     New-Item -ItemType Directory -Path $configDir -Force | Out-Null
 }
 
+$backupPath = $null
 if (Test-Path $configFile) {
+    $backupPath = "$configFile.backup.$(Get-Date -Format 'yyyyMMdd-HHmmss')"
+    Copy-Item $configFile $backupPath -Force
+    Write-Ok "Backed up existing config to $backupPath"
+
     $raw = Get-Content $configFile -Raw
+    $configHash = $null
     try {
-        $config = $raw | ConvertFrom-Json
-
-        if (-not $config.PSObject.Properties["mcpServers"]) {
-            $config | Add-Member -NotePropertyName "mcpServers" -NotePropertyValue ([PSCustomObject]@{})
-        }
-
-        $config.mcpServers | Add-Member -NotePropertyName "BusinessCentral" -NotePropertyValue ([PSCustomObject]$desiredServer) -Force
-
-        $config | ConvertTo-Json -Depth 10 | Set-Content $configFile -Encoding UTF8
-        Write-Ok "Updated existing config"
-
+        $parsed = $raw | ConvertFrom-Json
+        $configHash = ConvertTo-HashtableDeep $parsed
     } catch {
-        $backup = "$configFile.backup.$(Get-Date -Format 'yyyyMMdd-HHmmss')"
-        Copy-Item $configFile $backup
-        Write-Warn "Existing config was invalid - backed up to $backup"
-
-        $newConfig = @{ mcpServers = @{ BusinessCentral = $desiredServer } }
-        $newConfig | ConvertTo-Json -Depth 10 | Set-Content $configFile -Encoding UTF8
-        Write-Ok "Created fresh config"
+        Write-Warn "Existing config was not valid JSON - starting from an empty config"
+        $configHash = $null
     }
+
+    if (-not $configHash -or -not ($configHash -is [hashtable])) {
+        $configHash = @{}
+    }
+    if (-not $configHash.ContainsKey("mcpServers") -or -not ($configHash["mcpServers"] -is [hashtable])) {
+        $configHash["mcpServers"] = @{}
+    }
+    $configHash["mcpServers"]["BusinessCentral"] = $desiredServer
 } else {
-    $newConfig = @{ mcpServers = @{ BusinessCentral = $desiredServer } }
-    $newConfig | ConvertTo-Json -Depth 10 | Set-Content $configFile -Encoding UTF8
-    Write-Ok "Created new config at $configFile"
+    $configHash = @{ mcpServers = @{ BusinessCentral = $desiredServer } }
+}
+
+$json = $configHash | ConvertTo-Json -Depth 10
+Write-Utf8NoBom -Path $configFile -Content $json
+
+# Validate what we just wrote — if Claude Desktop can't parse it, we'd rather
+# fail loudly here than have the user discover it on next launch.
+try {
+    $verify = Get-Content $configFile -Raw | ConvertFrom-Json
+    if (-not $verify.mcpServers.BusinessCentral) {
+        throw "BusinessCentral entry missing after write"
+    }
+    Write-Ok "Wrote config and verified it parses cleanly"
+} catch {
+    Write-Fail "Config written but failed verification: $($_.Exception.Message)"
+    if ($backupPath -and (Test-Path $backupPath)) {
+        Copy-Item $backupPath $configFile -Force
+        Write-Warn "Restored previous config from backup"
+    }
+    Read-Host "Press Enter to exit"
+    exit 1
 }
 
 # -- Done ---------------------------------------------------------------------
