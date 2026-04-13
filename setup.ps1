@@ -184,7 +184,7 @@ Write-Host ""
 
 $bcTenantId    = Read-Host "  Tenant ID (GUID)"
 $bcEnvironment = Read-Host "  Environment name (e.g. Production, Sandbox, Pre-Production)"
-$bcCompany     = Read-Host "  Company name (e.g. Dakota Matting)"
+$bcCompany     = Read-Host "  Company name (e.g. CRONUS USA, Inc.)"
 
 Write-Host ""
 Write-Host "  Custom APIs are optional. Press Enter to skip if you only need standard BC APIs." -ForegroundColor Gray
@@ -192,7 +192,7 @@ $bcCustomPub   = Read-Host "  Custom API publisher (e.g. MscloudExperts, or Ente
 $bcCustomGroup = ""
 $bcCustomVer   = ""
 if ($bcCustomPub) {
-    $bcCustomGroup = Read-Host "  Custom API group (e.g. dakotaMats)"
+    $bcCustomGroup = Read-Host "  Custom API group"
     $bcCustomVer   = Read-Host "  Custom API version (default: v1.0)"
     if (-not $bcCustomVer) { $bcCustomVer = "v1.0" }
 }
