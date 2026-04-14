@@ -318,6 +318,40 @@ powershell -ExecutionPolicy Bypass -File setup-dataverse.ps1 -ClientSecret $secr
 
 Note: the `irm | iex` form executes the script inline and cannot pass `-ClientSecret`, so it will always prompt interactively.
 
+### Troubleshooting
+
+**`Cannot find module 'C:\Users\<someone>\mcp-dataverse\node_modules\...'`**
+The installer writes paths under `%USERPROFILE%` of the account that runs it. Claude Desktop then launches the server as the currently logged-in Windows user. If you installed under one account (e.g. `ivanr`) but Claude Desktop runs under a different one (e.g. `gergo`), the hardcoded path in `claude_desktop_config.json` will not exist for that user. **Fix:** run `setup-dataverse.ps1` while signed in as the same Windows user that uses Claude Desktop, or hand-edit the `args` and `MCP_CONFIG_PATH` entries in `claude_desktop_config.json` to point at the right profile.
+
+**`Fatal error: Invalid configuration: environmentUrl: Required`**
+The server cannot locate or parse the `config.json` pointed to by `MCP_CONFIG_PATH`. Either the file is missing, the env var is not making it through to the child process, or the JSON got corrupted. **Fix:** skip the file entirely and pass everything as inline env vars in `claude_desktop_config.json` — the `mcp-dataverse` package reads these directly:
+
+```json
+{
+  "mcpServers": {
+    "Dataverse": {
+      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "args": ["C:\\Users\\<your-user>\\mcp-dataverse\\node_modules\\mcp-dataverse\\dist\\server.js"],
+      "env": {
+        "DATAVERSE_ENV_URL": "https://<org>.crm.dynamics.com",
+        "AUTH_METHOD": "client-credentials",
+        "AZURE_TENANT_ID": "<tenant-guid>",
+        "AZURE_CLIENT_ID": "<app-registration-client-id>",
+        "AZURE_CLIENT_SECRET": "<client-secret>"
+      }
+    }
+  }
+}
+```
+
+This eliminates the dependency on the separate `config.json` file and `MCP_CONFIG_PATH`.
+
+**`Unexpected token 'w', "warn: Mode"... is not valid JSON`**
+This error comes from Microsoft's official `@microsoft/dataverse` package — it writes `warn:` log lines to stdout, which corrupts the JSON-RPC stream Claude Desktop reads from the server. The installer in this repo deliberately uses the community package `mcp-dataverse` (by `codeurali`) instead, which respects stdio hygiene. If you see this error, your Claude Desktop config is still pointing at `@microsoft/dataverse` — replace the entry with the one produced by `setup-dataverse.ps1` or the JSON block above.
+
+**`'npx' is not recognized as an internal or external command`**
+Claude Desktop does not reliably resolve `npx` from the user's `PATH` when spawning child processes. The installer avoids this by running the server via an absolute path to `node.exe`, so you should not hit this with the bundled setup. If you hand-wrote a config that uses `"command": "npx"`, either switch to the absolute-path form above or use `cmd /c npx.cmd ...`.
+
 ---
 
 ## License
