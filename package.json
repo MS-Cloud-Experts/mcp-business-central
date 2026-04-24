@@ -1,7 +1,7 @@
 {
   "name": "@mscloudexperts/mcp-business-central",
-  "version": "0.4.0",
-  "description": "MCP server for Microsoft Dynamics 365 Business Central with 115 named tools",
+  "version": "0.5.0",
+  "description": "MCP server for Microsoft Dynamics 365 Business Central with 117 named tools",
   "type": "module",
   "bin": {
     "mcp-business-central": "build/index.js"

@@ -116,6 +116,66 @@ export const dktJobPlanningLines: EntityDefinition = {
   ],
 };
 
+export const dktJobPlanningLineTOs: EntityDefinition = {
+  entityName: "dktJobPlanningLineTO",
+  entitySetName: "dktJobPlanningLineTOs",
+  pageId: "PAG73039",
+  apiBase: "custom",
+  description:
+    "Exposes job planning line transfer order records, linking planning lines to their originating transfer orders including transfer locations, bin codes, quantities transferred, batch numbers, and transfer order status.",
+  keyStrategy: { kind: "uuid", field: "systemId" },
+  operations: { list: true, create: false, modify: false, delete: false },
+  properties: [
+    uuid("systemId", "System Id"),
+    int32("entryNo", "Entry No."),
+    str("jobNo", "Job No."),
+    str("jobTaskNo", "Job Task No."),
+    int32("lineNo", "Line No."),
+    str("transferOrderNo", "Transfer Order No."),
+    decimal("quantityTransferred", "Quantity Transferred"),
+    str("transferFromCode", "Transfer-from Code"),
+    str("transferToCode", "Transfer-to Code"),
+    str("transferFromBinCode", "Transfer-from Bin Code"),
+    str("transferToBinCode", "Transfer-to Bin Code"),
+    opt("status", "TO Status", ["Open", "Released"]),
+    str("batchNumber", "Batch Number"),
+    date("createdDate", "Created Date"),
+    str("createdBy", "Created By"),
+  ],
+};
+
+export const dktTransferLines: EntityDefinition = {
+  entityName: "dktTransferLine",
+  entitySetName: "dktTransferLines",
+  pageId: "PAG73049",
+  apiBase: "custom",
+  description:
+    "Exposes transfer order lines including item details, quantities (ordered, outstanding, shipped, received), transfer locations, bin codes, shipment/receipt dates, and the linked DKT job planning line number.",
+  keyStrategy: { kind: "uuid", field: "systemId" },
+  operations: { list: true, create: false, modify: false, delete: false },
+  properties: [
+    uuid("systemId", "System Id"),
+    str("documentNo", "Document No."),
+    int32("lineNo", "Line No."),
+    str("itemNo", "Item No."),
+    str("variantCode", "Variant Code"),
+    str("description", "Description"),
+    decimal("quantity", "Quantity"),
+    decimal("outstandingQuantity", "Outstanding Quantity"),
+    decimal("qtyToShip", "Qty. to Ship"),
+    decimal("qtyShipped", "Quantity Shipped"),
+    decimal("qtyReceived", "Quantity Received"),
+    str("transferFromCode", "Transfer-from Code"),
+    str("transferToCode", "Transfer-to Code"),
+    str("transferFromBinCode", "Transfer-from Bin Code"),
+    str("transferToBinCode", "Transfer-to Bin Code"),
+    int32("dktJobPlanningLineNo", "DKT Job Planning Line No."),
+    date("shipmentDate", "Shipment Date"),
+    date("receiptDate", "Receipt Date"),
+    str("unitOfMeasureCode", "Unit of Measure Code"),
+  ],
+};
+
 export const matUtilizations: EntityDefinition = {
   entityName: "matUtilization",
   entitySetName: "matUtilizations",
@@ -244,6 +304,8 @@ export const customEntities: EntityDefinition[] = [
   dktJobLedgerEntries,
   dktJobTasks,
   dktJobPlanningLines,
+  dktJobPlanningLineTOs,
+  dktTransferLines,
   matUtilizations,
   matCategorySummaries,
   matUtilizationHistories,
