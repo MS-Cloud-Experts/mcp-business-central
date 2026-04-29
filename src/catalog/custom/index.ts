@@ -1,5 +1,5 @@
 import type { EntityDefinition } from "../types.js";
-import { str, uuid, date, decimal, int32, bool, opt, ro } from "../helpers.js";
+import { str, uuid, date, datetime, decimal, int32, bool, opt, ro } from "../helpers.js";
 
 export const dktJobLedgerEntries: EntityDefinition = {
   entityName: "dktJobLedgerEntry",
@@ -176,6 +176,79 @@ export const dktTransferLines: EntityDefinition = {
   ],
 };
 
+export const dktAssignments: EntityDefinition = {
+  entityName: "dktAssignment",
+  entitySetName: "dktAssignments",
+  pageId: "PAG73097",
+  apiBase: "custom",
+  description:
+    "Exposes project assignment records linking employees and generic resources to job tasks with allocated hours, percentages, status tracking (Open/Assigned/Reassigned/Unassigned), planning dates, region/union dimensions, and time sheet creation flags.",
+  keyStrategy: { kind: "integer", field: "entryNo" },
+  operations: { list: true, create: false, modify: false, delete: false },
+  properties: [
+    int32("entryNo", "Entry No."),
+    str("jobNo", "Project No."),
+    str("jobDescription", "Project Description"),
+    str("jobTaskNo", "Task No."),
+    int32("jobLineNo", "Job Line No."),
+    str("taskDescription", "Task Description"),
+    date("planningDate", "Planning Date"),
+    str("resourceNo", "Employee Resource No."),
+    str("resourceName", "Employee Name"),
+    str("genericResourceNo", "Generic Resource No."),
+    str("genericResourceName", "Generic Resource Name"),
+    decimal("estimatedHours", "Estimated Hours"),
+    decimal("allocatedPercentage", "Allocated %"),
+    decimal("allocatedHours", "Allocated Hours"),
+    opt("assignmentStatus", "Assignment Status", [
+      "Open",
+      "Assigned",
+      "Reassigned",
+      "Unassigned",
+    ]),
+    bool("isActive", "Is Active"),
+    date("taskStartDate", "Task Start Date"),
+    date("taskEndDate", "Task End Date"),
+    str("regionCode", "Region Code"),
+    str("unionCode", "Union Code"),
+    str("resourceWorkTypeCode", "Resource Work Type Code"),
+    bool("timeSheetCreated", "Time Sheet Created"),
+    date("lastTimeSheetDate", "Last Time Sheet Date"),
+    bool("notificationSent", "Notification Sent"),
+    datetime("unassignedDate", "Unassigned Date"),
+    str("createdBy", "Created By"),
+    datetime("createdDate", "Created Date"),
+    str("modifiedBy", "Modified By"),
+    datetime("modifiedDate", "Modified Date"),
+    uuid("systemId", "System Id"),
+  ],
+};
+
+export const dktTimeSheetLines: EntityDefinition = {
+  entityName: "dktTimeSheetLine",
+  entitySetName: "dktTimeSheetLines",
+  pageId: "PAG73098",
+  apiBase: "custom",
+  description:
+    "Exposes time sheet line entries with project/task assignment, work type, chargeable flag, absence cause, status (Open/Submitted/Rejected/Approved), and posting state.",
+  keyStrategy: { kind: "composite", fields: ["timeSheetNo", "lineNo"] },
+  operations: { list: true, create: false, modify: false, delete: false },
+  properties: [
+    str("timeSheetNo", "Time Sheet No."),
+    int32("lineNo", "Line No."),
+    str("type", "Type"),
+    str("jobNo", "Project No."),
+    str("jobTaskNo", "Project Task No."),
+    str("workTypeCode", "Work Type Code"),
+    str("description", "Description"),
+    bool("chargeable", "Chargeable"),
+    str("causeOfAbsenceCode", "Cause of Absence Code"),
+    opt("status", "Status", ["Open", "Submitted", "Rejected", "Approved"]),
+    bool("posted", "Posted"),
+    uuid("systemId", "System Id"),
+  ],
+};
+
 export const matUtilizations: EntityDefinition = {
   entityName: "matUtilization",
   entitySetName: "matUtilizations",
@@ -306,6 +379,8 @@ export const customEntities: EntityDefinition[] = [
   dktJobPlanningLines,
   dktJobPlanningLineTOs,
   dktTransferLines,
+  dktAssignments,
+  dktTimeSheetLines,
   matUtilizations,
   matCategorySummaries,
   matUtilizationHistories,
