@@ -2,11 +2,21 @@
 # MCP Dataverse Installer for Claude Desktop
 # MsCloudExperts
 # Usage:
-#   powershell -ExecutionPolicy Bypass -File install-dataverse-mcp.ps1
-#   powershell -ExecutionPolicy Bypass -File install-dataverse-mcp.ps1 -ClientSecret "xxxx"
+#   Interactive (prompts for all 4 values):
+#     powershell -ExecutionPolicy Bypass -File setup-dataverse.ps1
+#
+#   Unattended (pass any/all values; missing ones are prompted):
+#     powershell -ExecutionPolicy Bypass -File setup-dataverse.ps1 `
+#       -EnvironmentUrl "https://<org>.crm.dynamics.com" `
+#       -TenantId "<tenant-guid>" `
+#       -ClientId "<app-registration-guid>" `
+#       -ClientSecret "<secret-value>"
 # ============================================================
 
 param(
+    [string]$EnvironmentUrl,
+    [string]$TenantId,
+    [string]$ClientId,
     [string]$ClientSecret
 )
 
@@ -90,7 +100,7 @@ if (-not (Test-Path $modulePath)) {
     New-Item -ItemType Directory -Path $installDir -Force | Out-Null
     Push-Location $installDir
     cmd /c "npm init -y" 2>&1 | Write-Host
-    cmd /c "npm install mcp-dataverse" 2>&1 | Write-Host
+    cmd /c "npm install mcp-dataverse --loglevel=error" 2>&1 | Write-Host
     Pop-Location
 
     $serverJs = Join-Path $modulePath "dist\server.js"
@@ -105,9 +115,27 @@ else {
     Write-Host "[STEP 1/4] mcp-dataverse already installed - skipped" -ForegroundColor Green
 }
 
-# -- 3. Create config.json ----------------------------------------------------
+# -- 3. Collect connection details + create config.json -----------------------
 
-Write-Host "[STEP 2/4] Creating config.json..." -ForegroundColor Cyan
+Write-Host "[STEP 2/4] Connection details..." -ForegroundColor Cyan
+Write-Host "  Ask your IT admin (or MS Cloud Experts) for these values if you don't have them." -ForegroundColor Gray
+Write-Host ""
+
+if (-not $EnvironmentUrl) {
+    $EnvironmentUrl = Read-Host "  Environment URL (e.g. https://orga7f42fb6.crm.dynamics.com)"
+}
+if (-not $TenantId) {
+    $TenantId = Read-Host "  Tenant ID (GUID)"
+}
+if (-not $ClientId) {
+    $ClientId = Read-Host "  Client ID / Application ID (GUID)"
+}
+
+if (-not $EnvironmentUrl -or -not $TenantId -or -not $ClientId) {
+    Write-Host "[ERROR] Environment URL, Tenant ID, and Client ID are all required." -ForegroundColor Red
+    Read-Host "Press Enter to exit"
+    exit 1
+}
 
 if (-not $ClientSecret) {
     Write-Host ""
@@ -128,11 +156,14 @@ if (-not $ClientSecret) {
     exit 1
 }
 
+Write-Host ""
+Write-Host "  Writing config.json..." -ForegroundColor Gray
+
 $configObject = [ordered]@{
-    environmentUrl = "https://orga7f42fb6.crm.dynamics.com"
+    environmentUrl = $EnvironmentUrl
     authMethod     = "client-credentials"
-    tenantId       = "9d75096e-e828-45c7-ab5f-409cd0ad5b59"
-    clientId       = "e6cfa67d-4acc-477c-8108-8fdeb9f026cf"
+    tenantId       = $TenantId
+    clientId       = $ClientId
     clientSecret   = $ClientSecret
 }
 $configJson = $configObject | ConvertTo-Json
